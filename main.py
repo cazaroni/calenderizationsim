@@ -1,2 +1,3 @@
+import time
+
 print("hello")
-print("world")
