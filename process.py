@@ -2,10 +2,19 @@
 
 class Process:
     """Class definition of a process with an assigned priority, process ID, and user-defined name."""
-    def __init__(self, pid, name, priority):
+    def __init__(self, pid, name, priority, burst, arrival):
         self.pid = pid
         self.name = name
         self.priority = priority
+        self.burst = burst
+        self.arrival = arrival
+        
+        self.start_time = None
+        self.finish_time = None
+        self.waiting_time = None
+        self.turnaround_time = None
+        self.remaining_time = burst
+
 
     resource_requirement = None
     def display_info(self):
