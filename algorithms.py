@@ -24,6 +24,18 @@ def FCFS(processes):
 def SJF(processes):
     """Shortest Job First scheduling algorithm"""
     processes.sort(key=lambda x: x.burst)
+    global_time = 0
+    for process in processes:
+        # sets the global_time to whatever was last left off
+        if global_time < process.arrival:
+            global_time = process.arrival
+        process.start_time = global_time
+        global_time += process.burst
+        # finish time is when the process is done executing
+        process.finish_time = global_time
+        # the standard calcs for turnaround and waiting time
+        process.turnaround_time = process.finish_time - process.arrival
+        process.waiting_time = process.turnaround_time - process.burst
     example = False
 
 
