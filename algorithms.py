@@ -20,7 +20,7 @@ def FCFS(processes):
         process.waiting_time = process.turnaround_time - process.burst
         pass
 
-
+# non preemptive algorithm
 def SJF(processes):
     """Shortest Job First scheduling algorithm"""
     processes.sort(key=lambda x: x.burst)
@@ -36,12 +36,33 @@ def SJF(processes):
         # the standard calcs for turnaround and waiting time
         process.turnaround_time = process.finish_time - process.arrival
         process.waiting_time = process.turnaround_time - process.burst
-    example = False
+        pass
 
 
 def SRTF(processes):
     """Shortest Remaining Time First scheduling algorithm"""
-    example = False
+    # more fuckery involved
+    global_time = 0
+    # while loop since we will probably have to jump back and forth between processes
+    while processes:
+        available_processes = {p for p in processes if p.arrival <= global_time}
+
+        if not available_processes:
+            global_time += 1
+            continue
+
+        if available_processes:
+            active_process = min(available_processes, key=lambda x: x.remaining_time)
+            # do the thing
+            active_process.remaining_time -= 1
+            global_time += 1
+            
+            if active_process.remaining_time == 0:
+                active_process.finish_time = global_time
+                active_process.turnaround_time = active_process.finish_time - active_process.arrival
+                active_process.waiting_time = active_process.turnaround_time - active_process.burst
+                # pop it bop it 
+                processes.remove(active_process)
 
 def RR(processes, quantum):
     """Round Robin scheduling algorithm"""
