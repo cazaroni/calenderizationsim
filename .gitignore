@@ -1,0 +1,14 @@
+#python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+#caches- common tools
+*.cache
+.cache/
+.ipynb_checkpoints/
+
+#venv
+venv/
+.env/
