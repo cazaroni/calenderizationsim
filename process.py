@@ -14,9 +14,9 @@ class Process:
         self.waiting_time = None
         self.turnaround_time = None
         self.remaining_time = burst
+         # example resource requirement
+        self.resource_requirement = ["CPU", "DISK"]
 
-
-    resource_requirement = None
     def display_info(self):
         return f"Process ID: {self.pid}, Name: {self.name}, Priority: {self.priority}"
     

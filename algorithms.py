@@ -18,7 +18,7 @@ def FCFS(processes):
         # the standard calcs for turnaround and waiting time
         process.turnaround_time = process.finish_time - process.arrival
         process.waiting_time = process.turnaround_time - process.burst
-        pass
+        continue
 
 # non preemptive algorithm
 def SJF(processes):
@@ -40,30 +40,118 @@ def SJF(processes):
 
 
 def SRTF(processes):
-    """Shortest Remaining Time First scheduling algorithm"""
-    # more fuckery involved
+    # Make a working copy
+    ready = processes.copy()
     global_time = 0
-    # while loop since we will probably have to jump back and forth between processes
-    while processes:
-        available_processes = {p for p in processes if p.arrival <= global_time}
 
-        if not available_processes:
+    # main loop
+    while ready:
+        available = [p for p in ready if p.arrival <= global_time]
+
+        if not available:
             global_time += 1
             continue
 
-        if available_processes:
-            active_process = min(available_processes, key=lambda x: x.remaining_time)
-            # do the thing
-            active_process.remaining_time -= 1
-            global_time += 1
-            
-            if active_process.remaining_time == 0:
-                active_process.finish_time = global_time
-                active_process.turnaround_time = active_process.finish_time - active_process.arrival
-                active_process.waiting_time = active_process.turnaround_time - active_process.burst
-                # pop it bop it 
-                processes.remove(active_process)
+        active = min(available, key=lambda p: p.remaining_time)
 
-def RR(processes, quantum):
-    """Round Robin scheduling algorithm"""
-    example = False
+        # run only 1 unit (preemptive)
+        active.remaining_time -= 1
+        if active.start_time is None:
+            active.start_time = global_time
+        global_time += 1
+
+        # finish condition
+        if active.remaining_time == 0:
+            active.finish_time = global_time
+            active.turnaround_time = global_time - active.arrival
+            active.waiting_time = active.turnaround_time - active.burst
+            ready.remove(active)
+
+
+def round_robin(processes, quantum):
+    time = 0
+    queue = processes[:]
+
+    while queue:
+        p = queue.pop(0)
+
+        if p.remaining_time > quantum:
+            time += quantum
+            p.remaining_time -= quantum
+            queue.append(p)
+
+        else:
+            time += p.remaining_time
+            p.remaining_time = 0
+            p.turnaround_time = time
+            p.waiting_time = p.turnaround_time - p.burst_time
+
+
+def Priority_NP(processes):
+    """Non-preemptive Priority Scheduling"""
+    # sort by arrival time first, then priority
+    processes.sort(key=lambda p: (p.arrival, p.priority))
+
+    global_time = 0
+    completed = []
+
+    # work on a copy because we'll pull processes from it
+    ready = processes.copy()
+    processes.clear()
+
+    while ready:
+        # fukter processes that have arrived
+        available = [p for p in ready if p.arrival <= global_time]
+
+        if not available:
+            global_time += 1
+            continue
+
+        # pick the highest priority (lowest number)
+        active = min(available, key=lambda p: p.priority)
+
+        # run the entire burst (non-preemptive)
+        if global_time < active.arrival:
+            global_time = active.arrival
+
+        active.start_time = global_time
+        global_time += active.burst
+
+        active.finish_time = global_time
+        active.turnaround_time = active.finish_time - active.arrival
+        active.waiting_time = active.turnaround_time - active.burst
+
+        ready.remove(active)
+        completed.append(active)
+
+    # restore the list state
+    processes.extend(completed)
+
+
+def Priority_Preemptive(processes):
+    """Preemptive Priority Scheduling"""
+    global_time = 0
+
+    while processes:
+        # discriminate by considering processes that have arrived
+        available = [p for p in processes if p.arrival <= global_time]
+
+        if not available:
+            global_time += 1
+            continue
+
+        # Pick highest priority (lowest priority number)
+        active = min(available, key=lambda p: p.priority)
+
+        active.remaining_time -= 1
+        global_time += 1
+
+        if active.start_time is None:
+            active.start_time = global_time - 1
+
+        # If completed:
+        if active.remaining_time == 0:
+            active.finish_time = global_time
+            active.turnaround_time = global_time - active.arrival
+            active.waiting_time = active.turnaround_time - active.burst
+            processes.remove(active)

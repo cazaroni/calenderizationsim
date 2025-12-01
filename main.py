@@ -1,3 +1,4 @@
-import time
+from execution import run_simulation
 
-print("hello")
+if __name__ == "__main__":
+    run_simulation()
