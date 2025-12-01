@@ -116,6 +116,15 @@ def run_simulation(processes=None):
     """
     if processes is None:
         processes = create_processes()
+
+    # Reset per-process runtime state so repeated simulations work correctly.
+    # This ensures remaining_time and timing fields are fresh for preemptive algorithms.
+    for p in processes:
+        p.remaining_time = p.burst
+        p.start_time = None
+        p.finish_time = None
+        p.waiting_time = None
+        p.turnaround_time = None
     choice = pick_algorithm()
 
     if choice == "1":
