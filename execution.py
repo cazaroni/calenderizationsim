@@ -55,7 +55,7 @@ def main_menu():
     Simple looped main menu that doesn't lose any local states for processes and results
     """
     processes = []
-    results = {}
+    results = None
     while True:
         print("\n--- Main Menu ---")
         print("1. Create Processes")
@@ -78,7 +78,7 @@ def main_menu():
         elif menu_choice == "3":
             if not processes:
                 print("No processes available. Create processes first (option 1) or run a simulation (option 2).")
-            elif not results:
+            elif results is None:
                 print("No results available. Run a simulation first (option 2).")
             else:
                 print_results(processes, results)
