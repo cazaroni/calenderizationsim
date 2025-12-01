@@ -137,27 +137,30 @@ def Priority_NP(processes):
 def Priority_Preemptive(processes):
     """Preemptive Priority Scheduling"""
     global_time = 0
+    ready = processes[:]
 
-    while processes:
-        # discriminate by considering processes that have arrived
-        available = [p for p in processes if p.arrival <= global_time]
+    while ready:
+        # get processes that have arrived by now
+        available = [p for p in ready if p.arrival <= global_time]
 
         if not available:
             global_time += 1
             continue
 
-        # Pick highest priority (lowest priority number)
+        # highest priority = lowest number
         active = min(available, key=lambda p: p.priority)
 
+        # first run?
+        if active.start_time is None:
+            active.start_time = global_time
+
+        # run one unit
         active.remaining_time -= 1
         global_time += 1
 
-        if active.start_time is None:
-            active.start_time = global_time - 1
-
-        # If completed:
+        # finished?
         if active.remaining_time == 0:
             active.finish_time = global_time
             active.turnaround_time = global_time - active.arrival
             active.waiting_time = active.turnaround_time - active.burst
-            processes.remove(active)
+            ready.remove(active)
