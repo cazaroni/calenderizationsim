@@ -68,12 +68,16 @@ def SRTF(processes):
             ready.remove(active)
 
 
-def round_robin(processes, quantum):
+def Round_Robin(processes, quantum):
     time = 0
     queue = processes[:]
 
     while queue:
         p = queue.pop(0)
+
+        # python will complain about nonetypes  if we don't set start_time here
+        if p.start_time is None:
+            p.start_time = time
 
         if p.remaining_time > quantum:
             time += quantum
@@ -83,8 +87,10 @@ def round_robin(processes, quantum):
         else:
             time += p.remaining_time
             p.remaining_time = 0
-            p.turnaround_time = time
-            p.waiting_time = p.turnaround_time - p.burst_time
+
+            p.finish_time = time
+            p.turnaround_time = time - p.arrival
+            p.waiting_time = p.turnaround_time - p.burst
 
 
 def Priority_NP(processes):

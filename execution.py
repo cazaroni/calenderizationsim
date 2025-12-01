@@ -1,7 +1,7 @@
 # execution.py
 
 from process import Process
-from algorithms import FCFS, SJF, SRTF, Priority_NP, Priority_Preemptive
+from algorithms import FCFS, SJF, SRTF, Priority_NP, Priority_Preemptive, Round_Robin
 from metrics import compute_metrics
 
 
@@ -33,6 +33,7 @@ def pick_algorithm():
     print("3. SRTF (Preemptive SJF)")
     print("4. Priority (Non-preemptive)")
     print("5. Priority (Preemptive)")
+    print("6. Round Robin (quantum=2)")
 
     choice = input("> ").strip()
     return choice
@@ -57,6 +58,10 @@ def run_simulation():
     elif choice == "5":
         Priority_Preemptive(processes)
         algo_name = "Priority (Preemptive)"
+    elif choice == "6":
+        # example for round robin with quantum 2
+        Round_Robin(processes, quantum=2)
+        algo_name = "Round Robin (quantum=2)"
     else:
         print("Invalid selection")
         return
