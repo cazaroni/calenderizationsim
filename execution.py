@@ -61,9 +61,9 @@ def main_menu():
         print("1. Create Processes")
         print("2. Select Scheduling Algorithm and Run Simulation")
         print("3. Show results")
-        print("4. Skidaddle")
-        print("5. (Hidden) Load Lazy Test Processes")
-
+        print("4. Load Sample Processes")
+        print("5. Exit")
+        
         menu_choice = input("> ").strip()
 
         if menu_choice == "1":
@@ -84,12 +84,12 @@ def main_menu():
                 print_results(processes, results)
             continue
         elif menu_choice == "4":
+            processes = lazy_processes()
+            print("Test processes have been loaded for you.")
+            continue
+        elif menu_choice == "5":
             print("Exiting.")
             return
-        elif menu_choice == "5":
-            processes = lazy_processes()
-            print("Lazy test processes have been loaded for you, lazyass")
-            continue
         else:
             print("Invalid selection")
             continue
