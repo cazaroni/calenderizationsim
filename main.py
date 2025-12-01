@@ -1,4 +1,4 @@
-from execution import run_simulation
+from execution import main_menu
 
 if __name__ == "__main__":
-    run_simulation()
+    main_menu()
