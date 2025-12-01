@@ -70,26 +70,36 @@ def SRTF(processes):
 
 def Round_Robin(processes, quantum):
     time = 0
-    queue = processes[:]
+    ready = []
+    not_arrived = sorted(processes, key=lambda p: p.arrival)
 
-    while queue:
-        p = queue.pop(0)
+    while ready or not_arrived:
+        #if no ready jobs, jump forward in time
+        if not ready:
+            time = not_arrived[0].arrival
 
-        # python will complain about nonetypes  if we don't set start_time here
+        #move all processes that have arrived to 'ready'
+        while not_arrived and not_arrived[0].arrival <= time:
+            ready.append(not_arrived.pop(0))
+
+        p = ready.pop(0)
+
         if p.start_time is None:
             p.start_time = time
 
-        if p.remaining_time > quantum:
-            time += quantum
-            p.remaining_time -= quantum
-            queue.append(p)
+        run_time = min(quantum, p.remaining_time)
+        p.remaining_time -= run_time
+        time += run_time
 
+        #bring in newly arrived processes during this CPU burst
+        while not_arrived and not_arrived[0].arrival <= time:
+            ready.append(not_arrived.pop(0))
+
+        if p.remaining_time > 0:
+            ready.append(p)
         else:
-            time += p.remaining_time
-            p.remaining_time = 0
-
             p.finish_time = time
-            p.turnaround_time = time - p.arrival
+            p.turnaround_time = p.finish_time - p.arrival
             p.waiting_time = p.turnaround_time - p.burst
 
 
