@@ -23,21 +23,39 @@ def FCFS(processes):
 # non preemptive algorithm
 def SJF(processes):
     """Shortest Job First scheduling algorithm"""
-    processes.sort(key=lambda x: x.burst)
-    global_time = 0
-    for process in processes:
-        # sets the global_time to whatever was last left off
-        if global_time < process.arrival:
-            global_time = process.arrival
-        process.start_time = global_time
-        global_time += process.burst
-        # finish time is when the process is done executing
-        process.finish_time = global_time
-        # the standard calcs for turnaround and waiting time
-        process.turnaround_time = process.finish_time - process.arrival
-        process.waiting_time = process.turnaround_time - process.burst
-        pass
+    time = 0
+    ready = []
+    not_arrived = sorted(processes, key=lambda p: p.arrival)
+    completed = []
 
+    while ready or not_arrived:
+        #if no ready processes, jump to the next duh
+        if not ready:
+            #time = not_arrived[0].arrival
+            time = max(time, not_arrived[0].arrival)
+
+        #move all processes to ready queue
+        while not_arrived and not_arrived[0].arrival <= time:
+            ready.append(not_arrived.pop(0))
+
+        #pick the shortest
+        active = min(ready, key=lambda p: p.burst)
+        ready.remove(active)
+
+        #set start time
+        if active.start_time is None:
+            active.start_time = time
+
+        time += active.burst
+
+        active.finish_time = time
+        active.turnaround_time = active.finish_time - active.arrival
+        active.waiting_time = active.turnaround_time - active.burst
+
+        completed.append(active)
+
+    #restore processes list
+    processes[:] = completed
 
 def SRTF(processes):
     # Make a working copy
@@ -78,7 +96,7 @@ def Round_Robin(processes, quantum):
         if not ready:
             time = not_arrived[0].arrival
 
-        #move all processes that have arrived to 'ready'
+        #move all processes 'ready'
         while not_arrived and not_arrived[0].arrival <= time:
             ready.append(not_arrived.pop(0))
 
